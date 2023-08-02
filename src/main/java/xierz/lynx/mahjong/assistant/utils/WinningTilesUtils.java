@@ -10,7 +10,7 @@ import java.util.concurrent.atomic.LongAdder;
 import java.util.stream.Collectors;
 
 public final class WinningTilesUtils {
-
+    private static final int[][] SEQUENCE_DELTA = new int[][]{{-2, -1}, {-1, 1}, {1, 2}};
 
     private WinningTilesUtils() {
     }
@@ -23,7 +23,7 @@ public final class WinningTilesUtils {
                 .stream()
                 .collect(Collectors.toMap(Map.Entry::getKey, it -> it.getValue().size()));
         // 先检查雀头个数
-        int pairCount = findPairCount(countByKind);
+        int pairCount = findPairCount(tiles);
         List<WinningTiles> winningTiles = new ArrayList<>();
         if (pairCount <= 1) {
             // 普通型或国士无双
@@ -41,14 +41,19 @@ public final class WinningTilesUtils {
         return winningTiles;
     }
 
-    private static int findPairCount(Map<TileKind, Integer> tiles) {
-        int result = 0;
-        for (Integer value : tiles.values()) {
-            if (value == 2) {
-                result++;
+    private static int findPairCount(List<Tile> tiles) {
+        Map<String, LongAdder> counters = new HashMap<>();
+        for (Tile tile : tiles) {
+            LongAdder counter = counters.computeIfAbsent(tile.getName(), k -> new LongAdder());
+            counter.increment();
+        }
+        int pairCount = 0;
+        for (LongAdder value : counters.values()) {
+            if (value.sum() == 2) {
+                pairCount++;
             }
         }
-        return result;
+        return pairCount;
     }
 
     /**
@@ -94,8 +99,6 @@ public final class WinningTilesUtils {
         }
         return winningTiles;
     }
-
-    private static final int[][] SEQUENCE_DELTA = new int[][]{{-2, -1}, {-1, 1}, {1, 2}};
 
     private static boolean isWinning(List<Tile> tiles, Map<String, LongAdder> tileCountMap, int current,
                                      boolean hasPair) {

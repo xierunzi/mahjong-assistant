@@ -8,7 +8,7 @@ import java.util.List;
 
 public class Main {
     public static void main(String[] args) {
-        List<Tile> tiles = TilesStringUtils.parseTilesString("1112345678999p");
+        List<Tile> tiles = TilesStringUtils.parseTilesString("1122334455668m");
         System.out.println(WinningTilesUtils.findWinningTiles(tiles));
     }
 }
